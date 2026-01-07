@@ -24,7 +24,7 @@ cd PeTTa
 ## Requirements
 
 - Python 3.8+
-- SWI-Prolog
+- SWI-Prolog >= 9.3.x
 - PeTTa (installed separately - see Prerequisites above)
 - janus-swi (Python package)
 - ipykernel (Python package)
