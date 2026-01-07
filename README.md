@@ -34,7 +34,9 @@ cd PeTTa
 
 ### Step 0: Create a Virtual Environment (Recommended)
 
-It's recommended to install the Jupyter kernel in a Python virtual environment:
+It's recommended to install the Jupyter kernel in a Python virtual environment. You can use any virtual environment tool (venv, virtualenv, conda, etc.).
+
+**Example using venv:**
 
 ```bash
 # Create a virtual environment
