@@ -32,6 +32,18 @@ cd PeTTa
 
 ## Installation
 
+### Step 0: Create a Virtual Environment (Recommended)
+
+It's recommended to install the Jupyter kernel in a Python virtual environment:
+
+```bash
+# Create a virtual environment
+python3 -m venv ~/jupyter-env
+
+# Activate it
+source ~/jupyter-env/bin/activate  # On Windows: ~/jupyter-env/Scripts/activate
+```
+
 ### Step 1: Set PETTA_PATH Environment Variable
 
 The kernel needs to know where PeTTa is installed. Set the `PETTA_PATH` environment variable:
@@ -56,7 +68,12 @@ cd /path/to/jupyter-petta-kernel
 ./install.sh
 ```
 
-This will install the Python package and register the kernel with Jupyter.
+The install script will:
+
+- Check if you're in a virtual environment (recommended)
+- Install the kernel package
+- Check for JupyterLab and offer to install it if needed
+- Register the kernel with Jupyter
 
 #### Manual Installation
 
