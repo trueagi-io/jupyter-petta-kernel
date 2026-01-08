@@ -1,234 +1,129 @@
 # Testing Checklist for PeTTa Jupyter Kernel
 
-Follow these steps to thoroughly test the kernel:
+Follow these steps to verify the kernel is working correctly:
 
-## 1. Verify Installation
+## 1. Quick Verification
 
-```bash
-python3 -m jupyter kernelspec list | grep petta
-```
-
-**Expected:** Should show `petta` kernel installed in your Jupyter kernels directory.
-
-## 2. Test Kernel Import
+Run the verification script to check all requirements:
 
 ```bash
-cd /opt/snet/PeTTa/python
-python3 -c "from petta_jupyter.kernel import PeTTaKernel; print('✓ Kernel imports successfully')"
+cd /path/to/jupyter-petta-kernel
+python3 verify_kernel.py
 ```
 
-**Expected:** Should print success message without errors.
+This will check:
+- PETTA_PATH environment variable is set
+- SWI-Prolog is installed and in PATH
+- janus-swi Python package is installed
+- petta_jupyter kernel can import successfully
+- Kernel is registered with Jupyter
 
-## 3. Launch JupyterLab
+✅ **Pass Criteria:** All checks pass with ✓ marks.
 
-```bash
-python3 -m jupyter lab
-```
+## 2. Test with Example Notebook
 
-**Expected:** JupyterLab opens in your browser.
+The recommended way to test the kernel is to run the example notebook:
 
-## 4. Create Test Notebook
+1. Launch JupyterLab:
+   ```bash
+   jupyter lab
+   ```
 
-1. In JupyterLab Launcher (the main tab that opens), look for "PeTTa (MeTTa)" under the "Notebook" section
-2. Click on the "PeTTa (MeTTa)" tile
+2. Open `examples/basic_usage.ipynb`
 
-**Expected:** New notebook opens with "PeTTa (MeTTa)" shown in top-right corner.
+3. Run all cells: **Run → Run All Cells**
 
-> **Note:** If you don't see the Launcher, click the "+" button in the top-left toolbar to open it.
+The notebook tests:
+- Basic arithmetic operations
+- Function definitions
+- Pattern matching
+- Recursive functions with guards
+- Error handling (syntax and type errors)
+- State persistence across cells
 
-## 5. Test Basic Execution
+✅ **Pass Criteria:** All cells execute successfully with expected outputs.
 
-### Test 5.1: Simple Arithmetic
-**Input:**
-```metta
-!(+ 1 2)
-```
-**Expected Output:** `3` (in normal text)
+## 3. Manual Testing (Optional)
 
-### Test 5.2: Multiplication
-**Input:**
-```metta
-!(* 3 4)
-```
-**Expected Output:** `12`
+If you prefer to test manually:
 
-### Test 5.3: Subtraction
-**Input:**
-```metta
-!(- 10 5)
-```
-**Expected Output:** `5`
+1. Create a new notebook in JupyterLab
+2. Select "PeTTa (MeTTa)" as the kernel
+3. Test basic execution:
+   ```metta
+   !(+ 1 2)
+   ```
+   **Expected:** `3`
 
-✅ **Pass Criteria:** All three operations return correct results in normal (black) text.
-
-## 6. Test Function Definitions
-
-### Test 6.1: Define Function
-**Input:**
-```metta
-(= (double $x) (* $x 2))
-```
-**Expected Output:** (no output)
-
-### Test 6.2: Use Function
-**Input:**
-```metta
-!(double 5)
-```
-**Expected Output:** `10`
-
-✅ **Pass Criteria:** Function definition shows no output, function usage returns correct result.
-
-## 7. Test Multiple Results
-
-### Test 7.1: Define Multiple Clauses
-
-**Input:**
-```metta
-(= (sign -1) negative)
-(= (sign 0) zero)
-(= (sign 1) positive)
-```
-**Expected Output:** (no output)
-
-### Test 7.2: Test Different Cases
-
-**Input:**
-```metta
-!(sign -1)
-```
-**Expected Output:** `negative`
-
-**Input:**
-```metta
-!(sign 0)
-```
-**Expected Output:** `zero`
-
-**Input:**
-```metta
-!(sign 1)
-```
-**Expected Output:** `positive`
-
-✅ **Pass Criteria:** Pattern matching works correctly for different values.
-
-> **Known Limitation:** Recursive functions (factorial, fibonacci, etc.) currently cause stack overflow in PeTTa due to clause ordering issues. The general recursive clause continues to match even when base cases should apply, leading to infinite recursion with negative numbers.
-
-## 8. Test Error Handling
-
-### Test 8.1: Syntax Error
-**Input:**
-```metta
-!(+ 1
-```
-**Expected Output:** Error message in red:
-```
-Parse error: missing ')', starting at line 1:
-+ 1
-```
-
-### Test 8.2: Type Error
-**Input:**
-```metta
-!(+ abc def)
-```
-**Expected Output:** Error message in red:
-```
-Type error: Expected evaluable, got def/0
-```
-
-✅ **Pass Criteria:** Errors display in red text with readable messages. Kernel does NOT crash.
-
-## 9. Test State Persistence
-
-### Test 9.1: Define Function in Cell 1
-**Input (Cell 1):**
-```metta
-(= (triple $x) (* $x 3))
-```
-
-### Test 9.2: Use Function in Cell 2
-**Input (Cell 2):**
-```metta
-!(triple 7)
-```
-**Expected Output:** `21`
-
-✅ **Pass Criteria:** Function defined in one cell can be used in later cells.
-
-## 10. Test Edge Cases
-
-### Test 10.1: Empty Cell
-**Input:** (leave cell empty and execute)
-**Expected:** No output, no error
-
-### Test 10.2: Whitespace Only
-**Input:** `   ` (just spaces)
-**Expected:** No output, no error
-
-### Test 10.3: Undefined Function
-**Input:**
-```metta
-!(undefined-function 42)
-```
-**Expected Output:** `(undefined-function 42)` (in normal text, not error)
-> Note: MeTTa returns unreduced expressions when functions aren't defined.
-
-## 11. Test Kernel Restart
-
-1. In notebook menu: "Kernel → Restart Kernel"
-2. Confirm restart
-3. Try using a previously defined function (e.g., `!(double 5)`)
-
-**Expected:** Should show error or unreduced expression (state is cleared).
-
-4. Re-define the function and try again
-
-**Expected:** Should work after re-definition.
-
-✅ **Pass Criteria:** Kernel restarts cleanly, state resets.
-
-## 12. Test Example Notebook
-
-1. Open `examples/basic_usage.ipynb`
-2. Run all cells: "Run → Run All Cells"
-
-**Expected:** All cells execute successfully with correct outputs.
+4. Test function definition:
+   ```metta
+   (= (double $x) (* $x 2))
+   !(double 5)
+   ```
+   **Expected:** `10`
 
 ## Final Checklist
 
-- [ ] Installation verified
-- [ ] Kernel imports successfully
-- [ ] JupyterLab launches
-- [ ] Can create notebook with PeTTa kernel
-- [ ] Basic arithmetic works (3 tests)
-- [ ] Function definitions work
-- [ ] Recursive functions work
-- [ ] Error handling works (syntax and type errors)
-- [ ] State persists across cells
-- [ ] Edge cases handled correctly
-- [ ] Kernel restart works
-- [ ] Example notebook runs successfully
+- [ ] Verification script passes all checks
+- [ ] `examples/basic_usage.ipynb` runs successfully
+- [ ] Can create new notebooks with PeTTa kernel
+- [ ] Kernel restarts cleanly (Kernel → Restart Kernel)
 
 ## Troubleshooting
 
+### Verification script fails
+
+If `verify_kernel.py` reports any failures, follow the fix suggestions it provides. Common issues:
+
+- **PETTA_PATH not set:** Add `export PETTA_PATH=/path/to/PeTTa` to your shell config
+- **SWI-Prolog not in PATH:** Install SWI-Prolog >= 9.3.x and add to PATH
+- **janus-swi errors:** Reinstall with `pip uninstall janus-swi -y && pip install janus-swi`
+
 ### Kernel won't start
+
 - Check janus-swi is installed: `pip list | grep janus`
 - Check SWI-Prolog is installed: `which swipl`
+- Verify PETTA_PATH: `echo $PETTA_PATH`
+- Look at JupyterLab terminal output for error messages
 
-### No output showing
-- Make sure you executed the cell (Shift+Enter)
-- Check kernel status in top-right (should show "PeTTa (MeTTa)")
+### Example notebook cells fail
 
-### Kernel crashes
-- Look at terminal where you ran `jupyter lab` for error messages
-- Try restarting kernel: "Kernel → Restart Kernel"
+- Make sure you're running cells in order (top to bottom)
+- Try restarting kernel: **Kernel → Restart Kernel**
+- Re-run all cells after restart
 
 ### Import errors
-- Make sure you're in the right directory when launching JupyterLab
-- Try reinstalling: `cd /opt/snet/PeTTa/python/petta_jupyter && ./install.sh`
+
+- Ensure PETTA_PATH is set in your shell config (`~/.bashrc` or `~/.zshrc`)
+- Restart your terminal and JupyterLab after setting environment variables
+- Run verification script to diagnose: `python3 verify_kernel.py`
+
+## Advanced Testing
+
+For developers working on the kernel:
+
+1. **Test kernel modifications:**
+   ```bash
+   pip install -e .
+   # Restart kernel in notebooks to pick up changes
+   ```
+
+2. **Test with different MeTTa code:**
+   - Create notebooks in `examples/` directory
+   - Test edge cases and error conditions
+   - Verify error messages are clear and helpful
+
+3. **Test installation script:**
+   ```bash
+   ./install.sh
+   # Follow prompts and verify all checks pass
+   ```
 
 ## Success!
 
 If all tests pass, the kernel is working correctly! 🎉
+
+For more information:
+- See [README.md](README.md) for usage documentation
+- Check [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
+- Review [examples/basic_usage.ipynb](examples/basic_usage.ipynb) for MeTTa examples
