@@ -90,7 +90,22 @@ jupyter kernelspec install --user /path/to/jupyter-petta-kernel/resources --name
 
 ### Verify Installation
 
-Check that the kernel is installed:
+Run the verification script to check all requirements:
+
+```bash
+cd /path/to/jupyter-petta-kernel
+python3 verify_kernel.py
+```
+
+This will check:
+
+- PETTA_PATH environment variable is set
+- SWI-Prolog is installed and in PATH
+- janus-swi Python package is installed
+- petta_jupyter kernel can import successfully
+- Kernel is registered with Jupyter
+
+Alternatively, check manually:
 
 ```bash
 jupyter kernelspec list
@@ -167,15 +182,41 @@ You should see `petta` in the list.
 
 ## Troubleshooting
 
+### Quick Diagnosis
+
+Run the verification script to identify issues:
+
+```bash
+cd /path/to/jupyter-petta-kernel
+python3 verify_kernel.py
+```
+
 ### "Cannot find petta module" error
 
-Make sure the `PETTA_PATH` environment variable is set:
+Make sure the `PETTA_PATH` environment variable is set and persists across sessions:
 
 ```bash
 export PETTA_PATH=/path/to/PeTTa
 ```
 
-Then restart JupyterLab/Jupyter Notebook.
+Add it to your shell configuration file (`~/.bashrc`, `~/.zshrc`, etc.) to make it permanent, then restart your terminal and JupyterLab.
+
+### "Library not loaded" or janus-swi errors
+
+If you see errors about missing SWI-Prolog libraries, this means janus-swi was compiled against a different SWI-Prolog installation than the one currently in your PATH.
+
+Fix by reinstalling janus-swi:
+
+```bash
+# Ensure SWI-Prolog is in your PATH first
+which swipl  # Should show the path to your SWI-Prolog installation
+
+# Reinstall janus-swi
+pip uninstall janus-swi -y
+pip install janus-swi --no-cache-dir
+```
+
+**Important**: Make sure SWI-Prolog remains in your PATH when you start JupyterLab. Add the appropriate export to your shell configuration file.
 
 ### Kernel crashes on startup
 
